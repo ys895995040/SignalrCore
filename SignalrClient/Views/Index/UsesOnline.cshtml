@@ -1,0 +1,41 @@
+﻿<input type="text" id="ParentId" placeholder="ParentId" />
+<br />
+<input type="text" id="ShopId" placeholder="ShopId" />
+<br />
+<button id="fuckyou">用户上线</button>
+<br />
+<br />
+<br />
+
+<ul id="message" style="color:red;"></ul>
+
+@section scripts {
+    <script>
+        $(function () {
+            //这里的地址是我发布到本地iis上的地址，根据自己的需求来修改
+            let hubUrl = 'http://192.168.0.149:8009/signalrHubs';
+            let httpConnection = new signalR.HttpConnection(hubUrl);
+            let hubConnection = new signalR.HubConnection(httpConnection);
+            $("#fuckyou").click(function () {
+                hubConnection.invoke('InitUser', $("#ParentId").val(), $("#ShopId").val());
+            });
+            hubConnection.on('NoticeOnline', data => {
+                $("#message").append("<li>" + data + "</li>");
+            });
+            hubConnection.on('EveryOne', data => {
+                $("#message").append("<li style=\"color:red;\">全部推送：" + data + "</li>");
+            });
+            hubConnection.on('AnyGroups', data => {
+                $("#message").append("<li style=\"color:black;\">单个用户组推送：" + data + "</li>");
+            });
+            hubConnection.on('AnyOne', data => {
+                $("#message").append("<li style=\"color:blue;\">单个ID推送：" + data + "</li>");
+            });
+            hubConnection.on('MoreParamsRequest', (message, date) => {
+                $("#message").append("<li style=\"color:green;\">多参数接收：" + message + " : " + data + "</li>");
+            });
+            hubConnection.start();
+
+        });
+    </script>
+}

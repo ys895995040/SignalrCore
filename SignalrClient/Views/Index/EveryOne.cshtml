@@ -1,0 +1,16 @@
+﻿<h1>全部推送：@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ffff")</h1>
+<ul id="message"></ul>
+
+@section scripts {
+    <script>
+        $(function () {
+            let hubUrl = 'http://192.168.0.149:8009/signalrHubs';
+            let httpConnection = new signalR.HttpConnection(hubUrl);
+            let hubConnection = new signalR.HubConnection(httpConnection);
+            hubConnection.on('EveryOne', data => {
+                $("#message").append("<li>" + data + "</li>");
+            });
+            hubConnection.start();
+        });
+    </script>
+}
